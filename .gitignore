@@ -1,6 +1,7 @@
 # Project-sepcific
 plan.txt
 backend/api.py
+howto.txt
 
 # Python-specific
 __pycache__/
