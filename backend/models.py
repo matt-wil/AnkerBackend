@@ -14,7 +14,7 @@ class Booking(db.Model):
     booking_time = db.Column(db.Time, nullable=False)
     notes = db.Column(db.String)
     booking_status = db.Column(db.String(50), default="pending")
-    created_at = db.Column(db.Datetime, default=func.now())
+    created_at = db.Column(db.DateTime, default=func.now())
 
     user = relationship("User", back_populates="bookings")
     artist = relationship("Artist", back_populates="bookings")
@@ -31,9 +31,10 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    registration_date = db.Column(db.Datetime, default=func.now())
+    registration_date = db.Column(db.DateTime, default=func.now())
 
     client = relationship("Client", back_populates="user", uselist=False)
+    bookings = relationship("Booking", back_populates="user")
 
     def __repr__(self):
         return f"User Details\n\tId: {self.user_id}\n\tUsername: {self.username}\n\tEmail: {self.email}\n\tRegistration Date: {self.registration_date}"
@@ -86,7 +87,7 @@ class Service(db.Model):
     duration = db.Column(db.Integer)
     price = db.Column(db.Numeric(10, 2))
 
-    booking = relationship("Booking", back_populates="service")
+    bookings = relationship("Booking", back_populates="service")
 
     def __repr__(self):
         return f"Service Details\n\tID: {self.service_id}\n\tName: {self.name}\n\tPrice: {self.price}"
@@ -100,7 +101,7 @@ class PortfolioImage(db.Model):
     image_url = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     category = db.Column(db.String(50))
-    upload_date = db.Column(db.Datetime, default=func.now())
+    upload_date = db.Column(db.DateTime, default=func.now())
 
     artist = relationship("Artist", back_populates="portfolio_images")
 
