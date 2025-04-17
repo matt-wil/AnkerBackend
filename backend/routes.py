@@ -1,4 +1,4 @@
-from flask import render_template, request, Blueprint, jsonify
+from flask import request, jsonify
 from models import Booking, User, Client, Artist, Service, PortfolioImage
 
 
@@ -41,9 +41,9 @@ def register_routes(app, db):
             return jsonify(bookings_to_dict, 200)
 
         elif request.method == 'POST':
-            data = request.json()
+            data = request.get_json()
             if not data:
-                return jsonify({"Error": "No Data Found"}, 400)
+                return jsonify({"Error": "No Booking Data Found"}, 400)
             try:
                 new_booking = Booking(**data)
                 db.session.add(new_booking)
@@ -72,7 +72,7 @@ def register_routes(app, db):
         elif request.method == "DELETE":
             db.session.delete(booking)
             db.session.commit()
-            return jsonify({"Error": "Item successfully deleted"}, 200)
+            return jsonify({"Message": "Item successfully deleted"}, 200)
 
     @app.route('/api/users', methods=['GET'])
     def get_users():
@@ -86,11 +86,46 @@ def register_routes(app, db):
         clients_to_dict = [client.to_dict() for client in clients]
         return jsonify(clients_to_dict, 200)
 
-    @app.route('/api/artists', methods=['GET'])
-    def get_artists():
-        artists = Artist.query.all()
-        artists_to_dict = [artist.to_dict() for artist in artists]
-        return jsonify(artists_to_dict, 200)
+    @app.route('/api/artists', methods=['GET', 'POST'])
+    def handle_artists():
+        if request.method == "GET":
+            artists = Artist.query.all()
+            artists_to_dict = [artist.to_dict() for artist in artists]
+            return jsonify(artists_to_dict, 200)
+
+        elif request.method == "POST":
+            data = request.get_json()
+            if not data:
+                return jsonify({"Error": "No Artist Data Found"}, 400)
+            try:
+                new_artist = Artist(**data)
+                db.session.add(new_artist)
+                db.session.commit()
+                return jsonify(new_artist.to_dict(), 201)
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({"Error": f"Error creating new Artist: {str(e)}"})
+
+    @app.route('/api/artists/<int:artist_id>', methods=["GET", "PUT", "DELETE"])
+    def handle_artist(artist_id):
+        artist = Artist.query.get_or_404(artist_id)
+        if request.method == 'GET':
+            return jsonify(artist.to_dict(), 200)
+        elif request.method == 'PUT':
+            data = request.get_json()
+            if not data:
+                return jsonify({"Error": "No Artist data provided"}, 400)
+            try:
+                for key, value in data.items():
+                    setattr(artist, key, value)
+                db.session.commit()
+                return jsonify(artist.to_dict(), 200)
+            except Exception as e:
+                return jsonify({"Error": f"Could not update the Artist: {str(e)}"})
+        elif request.method == "DELETE":
+            db.session.delete(artist)
+            db.session.commit()
+            return jsonify({"Error": "Item successfully deleted"}, 200)
 
     @app.route('/api/services', methods=['GET'])
     def get_services():

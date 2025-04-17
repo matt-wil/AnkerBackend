@@ -20,6 +20,19 @@ class Booking(db.Model):
     artist = relationship("Artist", back_populates="bookings")
     service = relationship("Service", back_populates="bookings")
 
+    def to_dict(self):
+        return {
+            "booking_id": self.booking_id,
+            "user_id": self.user_id,
+            "artist_id": self.artist_id,
+            "service_id": self.service_id,
+            "booking_date": self.booking_date,
+            "booking_time": self.booking_time,
+            "notes": self.notes,
+            "booking_status": self.booking_status,
+            "created_at": self.created_at
+        }
+
     def __repr__(self):
         return f"Status: {self.booking_status}\n\tBooking with {self.user_id} at {self.booking_time} on the {self.booking_date}"
 
@@ -35,6 +48,14 @@ class User(db.Model):
 
     client = relationship("Client", back_populates="user", uselist=False)
     bookings = relationship("Booking", back_populates="user")
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "username": self.username,
+            "email": self.email,
+            "registration_date": self.registration_date
+        }
 
     def __repr__(self):
         return f"User Details\n\tId: {self.user_id}\n\tUsername: {self.username}\n\tEmail: {self.email}\n\tRegistration Date: {self.registration_date}"
@@ -55,6 +76,19 @@ class Client(db.Model):
 
     user = relationship("User", back_populates="client")
 
+    def to_dict(self):
+        return {
+            "client_id": self.client_id,
+            "user_id": self.user_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "phone_number": self.phone_number,
+            "address": self.address,
+            "email": self.email,
+            "consent_signed_date": self.consent_signed_date,
+            "preferences": self.preferences
+        }
+
     def __repr__(self):
         return f"Client Details\n\tClient Id: {self.client_id}\n\tUser Id: {self.user_id}\n\tName: {self.first_name} {self.last_name}\n\tEmail: {self.email}\n\tAddress: {self.address}\n\tContact: {self.phone_number}"
 
@@ -64,6 +98,7 @@ class Artist(db.Model):
 
     artist_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
+    profession = db.Column(db.String(100), nullable=False)
     bio = db.Column(db.Text)
     specialties = db.Column(db.Text)
     profile_image = db.Column(db.String(255))  # url to the static/images/artists
@@ -73,6 +108,19 @@ class Artist(db.Model):
 
     portfolio_images = relationship("PortfolioImage", back_populates="artist")
     bookings = relationship("Booking", back_populates="artist")
+
+    def to_dict(self):
+        return {
+            "artist_id": self.artist_id,
+            "name": self.name,
+            "profession": self.profession,
+            "bio": self.bio,
+            "specialties": self.specialties,
+            "profile_image": self.profile_image,
+            "is_active": self.is_active,
+            "contact_email": self.contact_email,
+            "social_media_links": self.social_media_links
+        }
 
     def __repr__(self):
         return f"Artist Details\n\tName: {self.name}\n\tStatus: {self.is_active}"
@@ -89,6 +137,15 @@ class Service(db.Model):
 
     bookings = relationship("Booking", back_populates="service")
 
+    def to_dict(self):
+        return {
+            "service_id": self.service_id,
+            "name": self.name,
+            "description": self.description,
+            "duration": self.duration,
+            "price": self.price
+        }
+
     def __repr__(self):
         return f"Service Details\n\tID: {self.service_id}\n\tName: {self.name}\n\tPrice: {self.price}"
 
@@ -104,6 +161,16 @@ class PortfolioImage(db.Model):
     upload_date = db.Column(db.DateTime, default=func.now())
 
     artist = relationship("Artist", back_populates="portfolio_images")
+
+    def to_dict(self):
+        return {
+            "image_id": self.image_id,
+            "artist_id": self.artist_id,
+            "image_url": self.image_url,
+            "description": self.description,
+            "category": self.category,
+            "upload_date": self.upload_date
+        }
 
     def __repr__(self):
         return f"Artist: {self.artist_id}\nImage url: {self.image_url}"
