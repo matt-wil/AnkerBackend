@@ -1,29 +1,41 @@
 from app import db
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy import Enum
+import enum
+
+
+class BookingStatus(enum.Enum):
+    pending = "pending"
+    confirmed = "confirmed"
+    cancelled = "cancelled"
+    completed = "completed"
 
 
 class Booking(db.Model):
     __tablename__ = 'bookings'
+    __table_args__ = (
+        db.UniqueConstraint('artist_id', 'booking_date', 'booking_time', name='uq_artist_booking_slot'),
+    )
 
     booking_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'))
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.artist_id'), nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey('services.service_id'), nullable=False)
     booking_date = db.Column(db.Date, nullable=False)
     booking_time = db.Column(db.Time, nullable=False)
     notes = db.Column(db.String)
-    booking_status = db.Column(db.String(50), default="pending")
+    booking_status = db.Column(Enum(BookingStatus), default=BookingStatus.pending, nullable=False)
     created_at = db.Column(db.DateTime, default=func.now())
 
-    user = relationship("User", back_populates="bookings")
+    client = relationship("Client", back_populates="bookings")
     artist = relationship("Artist", back_populates="bookings")
     service = relationship("Service", back_populates="bookings")
 
     def to_dict(self):
         return {
             "booking_id": self.booking_id,
-            "user_id": self.user_id,
+            "client_id": self.client_id,
             "artist_id": self.artist_id,
             "service_id": self.service_id,
             "booking_date": self.booking_date,
@@ -34,38 +46,13 @@ class Booking(db.Model):
         }
 
     def __repr__(self):
-        return f"Status: {self.booking_status}\n\tBooking with {self.user_id} at {self.booking_time} on the {self.booking_date}"
-
-
-class User(db.Model):
-    __tablename__ = 'users'
-
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(50), unique=True)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    registration_date = db.Column(db.DateTime, default=func.now())
-
-    client = relationship("Client", back_populates="user", uselist=False)
-    bookings = relationship("Booking", back_populates="user")
-
-    def to_dict(self):
-        return {
-            "user_id": self.user_id,
-            "username": self.username,
-            "email": self.email,
-            "registration_date": self.registration_date
-        }
-
-    def __repr__(self):
-        return f"User Details\n\tId: {self.user_id}\n\tUsername: {self.username}\n\tEmail: {self.email}\n\tRegistration Date: {self.registration_date}"
+        return f"Status: {self.booking_status}\n\tBooking with {self.client_id} at {self.booking_time} on the {self.booking_date}"
 
 
 class Client(db.Model):
     __tablename__ = 'clients'
 
     client_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), unique=True, nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     phone_number = db.Column(db.String(20))
@@ -74,12 +61,11 @@ class Client(db.Model):
     consent_signed_date = db.Column(db.Date)
     preferences = db.Column(db.Text)
 
-    user = relationship("User", back_populates="client")
+    bookings = relationship("Booking", back_populates="client")
 
     def to_dict(self):
         return {
             "client_id": self.client_id,
-            "user_id": self.user_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "phone_number": self.phone_number,
