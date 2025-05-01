@@ -69,7 +69,7 @@ def register_routes(app, db):
         elif request.method == "DELETE":
             db.session.delete(booking)
             db.session.commit()
-            return jsonify({"Message": "Item successfully deleted"}, 200)
+            return jsonify({"Success": "Item successfully deleted"}, 200)
 
     @app.route('/api/clients', methods=['GET'])
     def get_clients():
@@ -112,11 +112,11 @@ def register_routes(app, db):
                 db.session.commit()
                 return jsonify(artist.to_dict()), 200
             except Exception as e:
-                return jsonify({"Error": f"Could not update the Artist: {str(e)}"})
+                return jsonify({"Error": f"Could not update the Artist: {str(e)}"}), 400
         elif request.method == "DELETE":
             db.session.delete(artist)
             db.session.commit()
-            return jsonify({"Error": "Item successfully deleted"}), 200
+            return jsonify({"Success": "Item successfully deleted"}), 200
 
     @app.route('/api/portfolio_images', methods=['GET', 'POST'])
     def handle_portfolio_images():
@@ -143,15 +143,64 @@ def register_routes(app, db):
         portfolio_image = PortfolioImage.query.get_or_404(image_id)
         if request.method == 'GET':
             return portfolio_image
+        elif request.method == 'PUT':
+            data = request.get_json()
+            if not data:
+                return jsonify({"Error", "No Data received"}), 400
+            try:
+                for key, value in data.items():
+                    setattr(portfolio_image, key, value)
+                db.session.commit()
+                return jsonify(portfolio_image.to_dict()), 200
+            except Exception as e:
+                return jsonify({"Error": f"Could not update the profile image {str(e)}"}), 400
+        elif request.method == 'DELETE':
+            db.session.delete(portfolio_image)
+            db.session.commit()
+            return jsonify({"Success": "Portfolio image successfully deleted"}), 200
 
-    @app.route('/api/portfolio_images/<int:artist_id>', methods=['GET'])
+    @app.route('/api/portfolio_images/by_artist/<int:artist_id>', methods=['GET'])
     def handle_portfolio_images_by_artist_id(artist_id):
         portfolio_images = PortfolioImage.query.filter_by(artist_id=artist_id).all()
         portfolio_images_to_dict = [portfolio_image.to_dict() for portfolio_image in portfolio_images]
         return jsonify(portfolio_images_to_dict), 200
 
-    @app.route('/api/services', methods=['GET'])
-    def get_services():
-        services = Service.query.all()
-        services_to_dict = [service.to_dict() for service in services]
-        return jsonify(services_to_dict), 200
+    @app.route('/api/services', methods=['GET', 'POST'])
+    def handle_services():
+        if request.method == 'GET':
+            services = Service.query.all()
+            services_to_dict = [service.to_dict() for service in services]
+            return jsonify(services_to_dict), 200
+        elif request.method == 'POST':
+            data = request.get_json()
+            if not data:
+                return jsonify({"Error": "Could not retrieve data"}), 400
+            try:
+                new_service = Service(**data)
+                db.session.add(new_service)
+                db.session.commit()
+                return jsonify(new_service.to_dict()), 201
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({"Error": f"Could not create new service {str(e)}"}), 400
+
+    @app.route('/api/services/<int:service_id>', methods=['GET', 'PUT', 'DELETE'])
+    def handle_service(service_id):
+        service = Service.query.get_or_404(service_id)
+        if request.method == 'GET':
+            return jsonify(service.to_dict()), 200
+        elif request.method == 'PUT':
+            data = request.get_json()
+            if not data:
+                return jsonify({"Error": "No Data received"}), 400
+            try:
+                for key, value in data.items():
+                    setattr(service, key, value)
+                db.session.commit()
+                return jsonify(service.to_dict()), 200
+            except Exception as e:
+                return jsonify({"Error": f"Could not update the service {str(e)}"}), 400
+        elif request.method == 'DELETE':
+            db.session.delete(service)
+            db.session.commit()
+            return jsonify({"Success": "Service successfully deleted"}), 200
