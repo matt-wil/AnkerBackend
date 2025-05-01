@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models import Booking, User, Client, Artist, Service, PortfolioImage
+from models import Booking, Client, Artist, Service, PortfolioImage
 
 
 def register_routes(app, db):
@@ -12,8 +12,6 @@ def register_routes(app, db):
     def get_all():
         bookings = Booking.query.all()
         bookings_to_dict = [booking.to_dict() for booking in bookings]
-        users = User.query.all()
-        users_to_dict = [user.to_dict() for user in users]
         clients = Client.query.all()
         clients_to_dict = [client.to_dict() for client in clients]
         artists = Artist.query.all()
@@ -25,7 +23,6 @@ def register_routes(app, db):
         return jsonify(
             {
                 'bookings': bookings_to_dict,
-                'users': users_to_dict,
                 'clients': clients_to_dict,
                 'artists': artists_to_dict,
                 'services': services_to_dict,
