@@ -15,7 +15,7 @@ jwt = JWTManager()
 def create_app():
     # config
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./anker_freiburg.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
     jwt_secret_key = os.environ.get("JWT_SECRET_KEY")
     jwt_token_location = ["headers"]
     jwt_identity_claim = "user_id"
