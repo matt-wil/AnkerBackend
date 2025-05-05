@@ -2,6 +2,8 @@ from app import db
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Enum
+from sqlalchemy.ext.hybrid import hybrid_property
+from app import pwd_context
 import enum
 
 
@@ -162,9 +164,22 @@ class PortfolioImage(db.Model):
         return f"Artist: {self.artist_id}\nImage url: {self.image_url}"
 
 
-# to be Initialized at a later date
-# class BlogPosts(db.Model):
-#     __tablename__ = 'blog_posts'
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String, nullable=False)
+    _password = db.Column("password", db.String(255), nullable=False)
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = pwd_context.hash(value)
+
+
 
 
 
