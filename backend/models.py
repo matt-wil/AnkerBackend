@@ -1,9 +1,8 @@
-from app import db
+from .extensions import db, pwd_context
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
-from app import pwd_context
 import enum
 
 
@@ -92,7 +91,7 @@ class Artist(db.Model):
     profile_image = db.Column(db.String(255))  # url to the static/images/artists
     is_active = db.Column(db.Boolean, default=True)
     contact_email = db.Column(db.String(100))
-    social_media_links = db.Column(db.Text)
+    social_media_links = db.Column(db.JSON, default=dict)
 
     portfolio_images = relationship("PortfolioImage", back_populates="artist")
     bookings = relationship("Booking", back_populates="artist")
@@ -168,7 +167,8 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column("password", db.String(255), nullable=False)
 
     @hybrid_property
@@ -179,6 +179,16 @@ class User(db.Model):
     def password(self, value):
         self._password = pwd_context.hash(value)
 
+
+class TokenBlockList(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    jti = db.Column(db.String(36), nullable=False, unique=True)
+    token_type = db.Column(db.String(10), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    revoked_at = db.Column(db.DateTime)
+    expires = db.Column(db.DateTime, nullable=False)
+
+    user = db.relationship("User")
 
 
 
