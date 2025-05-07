@@ -4,7 +4,7 @@ from ..user_schema import UserCreateSchema, UserSchema
 from ..extensions import db, pwd_context, jwt
 from ..models import User
 from marshmallow import ValidationError
-from helpers import add_token_to_database, revoke_token, is_token_revoked
+from .helpers import add_token_to_database, revoke_token, is_token_revoked
 from ..config import Config
 
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
