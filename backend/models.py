@@ -190,13 +190,3 @@ class TokenBlockList(db.Model):
 
     user = db.relationship("User")
 
-
-
-
-
-
-
-
-
-
-
