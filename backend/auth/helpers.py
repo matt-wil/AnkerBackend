@@ -1,5 +1,5 @@
 from flask_jwt_extended import decode_token
-from ..config import Config
+from flask import current_app
 from datetime import datetime, timezone
 from ..models import TokenBlockList
 from ..extensions import db
@@ -10,7 +10,7 @@ def add_token_to_database(encoded_token):
     decoded_token = decode_token(encoded_token)
     jti = decoded_token["jti"]
     token_type = decoded_token["type"]
-    identity_claim = Config.JWT_IDENTITY_CLAIM
+    identity_claim = current_app.config["JWT_IDENTITY_CLAIM"]
 
     user_id = decoded_token.get(identity_claim)
     expires = datetime.fromtimestamp(decoded_token["exp"])
@@ -37,7 +37,7 @@ def revoke_token(token_jti, user_id):
 
 def is_token_revoked(jwt_payload):
     jti = jwt_payload["jti"]
-    user_id = jwt_payload[Config.JWT_IDENTITY_CLAIM]
+    user_id = jwt_payload[current_app.config["JWT_IDENTITY_CLAIM"]]
     try:
         token = TokenBlockList.query.filter_by(jti=jti, user_id=user_id).one()
         return token.revoked_at is not None
