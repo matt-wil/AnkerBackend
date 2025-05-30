@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
-from ..user_schema import UserCreateSchema, UserSchema
-from ..extensions import db, pwd_context, jwt
-from ..models import User
+from user_schema import UserCreateSchema, UserSchema
+from extensions import db, pwd_context, jwt
+from models import User
 from marshmallow import ValidationError
 from .helpers import add_token_to_database, revoke_token, is_token_revoked
 

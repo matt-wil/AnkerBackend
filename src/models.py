@@ -1,4 +1,4 @@
-from .extensions import db, pwd_context
+from extensions import db, pwd_context
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Enum

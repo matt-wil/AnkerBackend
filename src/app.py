@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
-from .extensions import db, jwt, ma, migrate
-from .config import Config
+from extensions import db, jwt, ma, migrate
+from config import Config
 
 
 def create_app():
@@ -17,11 +17,11 @@ def create_app():
     migrate.init_app(app, db)
 
     # register blueprints
-    from .auth.views import auth_blueprint
+    from auth.views import auth_blueprint
     app.register_blueprint(blueprint=auth_blueprint)
 
     # register app routes
-    from .routes import register_routes
+    from routes import register_routes
     register_routes(app, db)
 
     return app

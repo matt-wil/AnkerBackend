@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from .models import Booking, Client, Artist, Service, PortfolioImage
+from models import Booking, Client, Artist, Service, PortfolioImage
 
 
 def register_routes(app, db):

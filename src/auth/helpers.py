@@ -1,8 +1,8 @@
 from flask_jwt_extended import decode_token
 from flask import current_app
 from datetime import datetime, timezone
-from ..models import TokenBlockList
-from ..extensions import db
+from models import TokenBlockList
+from extensions import db
 from sqlalchemy.exc import NoResultFound
 
 

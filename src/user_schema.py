@@ -1,8 +1,8 @@
 from marshmallow import validate, validates_schema, ValidationError
 from marshmallow.fields import String
 
-from .models import User
-from .extensions import ma
+from models import User
+from extensions import ma
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
