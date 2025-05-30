@@ -13,7 +13,7 @@ class Config:
     basedir = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "SQLALCHEMY_DATABASE_NAME",
-        f"sqlite:///{os.path.join(basedir, 'instance', 'anker_freiburg.db')}"
+        f"sqlite:///{os.path.join(basedir, '../instance', 'anker_freiburg.db')}"
     )
     print(SQLALCHEMY_DATABASE_URI)
     # SQLALCHEMY_TRACK_MODIFICATIONS = False
