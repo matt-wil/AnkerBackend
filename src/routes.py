@@ -1,3 +1,5 @@
+import datetime
+
 from flask import request, jsonify
 from models import Booking, Client, Artist, Service, PortfolioImage
 
@@ -130,7 +132,7 @@ def register_routes(app, db):
             if not data:
                 return jsonify({"Error": "Portfolio image data not received."}), 400
             try:
-                new_portfolio_image = PortfolioImage(**data)
+                new_portfolio_image = PortfolioImage(**data, upload_date=datetime.datetime.now())
                 db.session.add(new_portfolio_image)
                 db.session.commit()
                 return jsonify(new_portfolio_image.to_dict()), 201
