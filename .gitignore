@@ -81,7 +81,7 @@ Thumbs.db
 
 # Database files (if you are using a local file-based database like SQLite - be careful about committing sensitive data)
 *.sqlite
-*.db
+# *.db
 
 # Log files
 *.log
