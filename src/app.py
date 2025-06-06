@@ -8,7 +8,7 @@ def create_app():
     # config
     app = Flask(__name__)
     app.config.from_object(Config)
-    CORS(app)
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
     # initialization
     db.init_app(app)
@@ -19,8 +19,8 @@ def create_app():
     # register blueprints
     from auth.views import auth_blueprint
     from auth.routes import admin_blueprint
-    app.register_blueprint(blueprint=auth_blueprint)
-    app.register_blueprint(blueprint=admin_blueprint)
+    CORS(app.register_blueprint(blueprint=auth_blueprint), supports_credentials=True, origins=["http://localhost:5173"])
+    CORS(app.register_blueprint(blueprint=admin_blueprint), supports_credentials=True, origins=["http://localhost:5173"])
 
     # register app routes
     from routes import register_routes
