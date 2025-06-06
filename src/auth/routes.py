@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, request, jsonify
 from models import Booking, Client, Artist, Service, PortfolioImage
-from extension import db
+from extensions import db
 
 
 admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
