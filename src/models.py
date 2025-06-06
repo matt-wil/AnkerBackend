@@ -20,7 +20,7 @@ class Booking(db.Model):
     )
 
     booking_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'), nullable=True)
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.artist_id'), nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey('services.service_id'), nullable=False)
     booking_date = db.Column(db.Date, nullable=False)

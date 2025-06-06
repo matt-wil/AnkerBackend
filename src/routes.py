@@ -1,5 +1,4 @@
 import datetime
-
 from flask import request, jsonify
 from models import Booking, Client, Artist, Service, PortfolioImage
 
@@ -12,10 +11,10 @@ def register_routes(app, db):
 
     @app.route('/api', methods=['GET'])
     def get_all():
-        bookings = Booking.query.all()
-        bookings_to_dict = [booking.to_dict() for booking in bookings]
-        clients = Client.query.all()
-        clients_to_dict = [client.to_dict() for client in clients]
+        # bookings = Booking.query.all()
+        # bookings_to_dict = [booking.to_dict() for booking in bookings]
+        # clients = Client.query.all()
+        # clients_to_dict = [client.to_dict() for client in clients]
         artists = Artist.query.all()
         artists_to_dict = [artist.to_dict() for artist in artists]
         services = Service.query.all()
@@ -24,54 +23,13 @@ def register_routes(app, db):
         portfolio_images_to_dict = [portfolio_image.to_dict() for portfolio_image in portfolio_images]
         return jsonify(
             {
-                'bookings': bookings_to_dict,
-                'clients': clients_to_dict,
+                'bookings': "This Data is Private and Requires Authentication.",
+                'clients': "This Data is Private and Requires Authentication.",
                 'artists': artists_to_dict,
                 'services': services_to_dict,
                 'portfolio_images': portfolio_images_to_dict
             }
         ), 200
-
-    @app.route('/api/bookings', methods=['GET', 'POST'])
-    def handle_bookings():
-        if request.method == 'GET':
-            bookings = Booking.query.all()
-            bookings_to_dict = [booking.to_dict() for booking in bookings]
-            return jsonify(bookings_to_dict), 200
-
-        elif request.method == 'POST':
-            data = request.get_json()
-            if not data:
-                return jsonify({"Error": "No Booking Data Found"}, 400)
-            try:
-                new_booking = Booking(**data)
-                db.session.add(new_booking)
-                db.session.commit()
-                return jsonify(new_booking.to_dict(), 201)
-            except Exception as e:
-                db.session.rollback()
-                return jsonify({"Error": f"Could not create item: {str(e)}"}, 400)
-
-    @app.route('/api/bookings/<int:booking_id>', methods=['GET', 'PUT', 'DELETE'])
-    def handle_booking(booking_id):
-        booking = Booking.query.get_or_404(booking_id)
-        if request.method == 'GET':
-            return jsonify(booking.to_dict()), 200
-        elif request.method == 'PUT':
-            data = request.get_json()
-            if not data:
-                return jsonify({"Error": "No data provided"}), 400
-            try:
-                for key, value in data.items():
-                    setattr(booking, key, value)
-                db.session.commit()
-                return jsonify(booking.to_dict(), 200)
-            except Exception as e:
-                return jsonify({"Error": f"Could not update the booking: {str(e)}"})
-        elif request.method == "DELETE":
-            db.session.delete(booking)
-            db.session.commit()
-            return jsonify({"Success": "Item successfully deleted"}, 200)
 
     @app.route('/api/clients', methods=['GET'])
     def get_clients():

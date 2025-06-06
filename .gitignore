@@ -2,7 +2,7 @@
 plan.txt
 src/api.py
 howto.txt
-
+playground.py
 # Python-specific
 __pycache__/
 *.pyc

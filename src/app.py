@@ -22,6 +22,8 @@ def create_app():
 
     # register app routes
     from routes import register_routes
+    from auth.routes import register_admin_routes
     register_routes(app, db)
+    register_admin_routes(app, db)
 
     return app
