@@ -18,7 +18,9 @@ def create_app():
 
     # register blueprints
     from auth.views import auth_blueprint
+    from auth.routes import admin_blueprint
     app.register_blueprint(blueprint=auth_blueprint)
+    app.register_blueprint(blueprint=admin_blueprint)
 
     # register app routes
     from routes import register_routes

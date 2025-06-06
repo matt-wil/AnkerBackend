@@ -7,7 +7,6 @@ admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 def register_admin_routes(app, db):
-    app.register_blueprint(admin_blueprint)
 
     @admin_blueprint.route("/api", methods=["GET"])
     @jwt_required()
