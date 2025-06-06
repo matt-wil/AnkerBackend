@@ -19,8 +19,8 @@ def create_app():
     # register blueprints
     from auth.views import auth_blueprint
     from auth.routes import admin_blueprint
-    CORS(app.register_blueprint(blueprint=auth_blueprint), supports_credentials=True, origins=["http://localhost:5173"])
-    CORS(app.register_blueprint(blueprint=admin_blueprint), supports_credentials=True, origins=["http://localhost:5173"])
+    app.register_blueprint(blueprint=auth_blueprint)
+    app.register_blueprint(blueprint=admin_blueprint)
 
     # register app routes
     from routes import register_routes
