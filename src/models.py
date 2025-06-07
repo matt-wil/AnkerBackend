@@ -5,6 +5,7 @@ from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
 import enum
 from datetime import datetime
+import uuid
 
 
 class BookingStatus(enum.Enum):
@@ -195,7 +196,7 @@ class TokenBlockList(db.Model):
 class Card(db.Model):
     __tablename__ = "cards"
 
-    id = db.Column(db.String(255), primary_key=True)
+    id = db.Column(db.String(255), primary_key=True, default=lambda: str(uuid.uuid4()))
     title = db.Column(db.String(255), nullable=False)
     column = db.Column(db.String(50), nullable=False)
     order_in_column = db.Column(db.Integer, default=0)
