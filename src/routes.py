@@ -29,13 +29,7 @@ def register_routes(app, db):
                 'services': services_to_dict,
                 'portfolio_images': portfolio_images_to_dict
             }
-        ), 200
-
-    @app.route('/api/clients', methods=['GET'])
-    def get_clients():
-        clients = Client.query.all()
-        clients_to_dict = [client.to_dict() for client in clients]
-        return jsonify(clients_to_dict), 200
+        ), 20
 
     @app.route('/api/artists', methods=['GET', 'POST'])
     def handle_artists():

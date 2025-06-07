@@ -27,12 +27,15 @@ def get_dashboard_data():
 
 @admin_blueprint.route("/api/clients", methods=["GET"])
 @jwt_required()
-def search_clients():
-    search = request.args.get("search", "")
-    clients = Client.query.filter(
-        (Client.first_name.ilike(f"%{search}%")) |
-        (Client.last_name.ilike(f"%{search}%"))
-    ).all()
+def get_or_search_clients():
+    search_query = request.args.get("search", "")
+    if search_query:
+        clients = Client.query.filter(
+            (Client.first_name.ilike(f"%{search_query}%")) |
+            (Client.last_name.ilike(f"%{search_query}%"))
+        ).all()
+    else:
+        clients = Client.query.all()
     return jsonify([client.to_dict() for client in clients]), 200
 
 
