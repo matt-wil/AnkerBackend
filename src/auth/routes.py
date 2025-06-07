@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, request, jsonify
-from models import Booking, Client, Artist, Service, PortfolioImage
+from models import Booking, Client, Artist, Service, PortfolioImage, Card
 from extensions import db
 
 
@@ -93,3 +93,46 @@ def handle_booking(booking_id):
         db.session.delete(booking)
         db.session.commit()
         return jsonify({"Success": "Item successfully deleted"}), 200
+
+
+@admin_blueprint.route('/api/cards', methods=['GET', 'POST'])
+@jwt_required()
+def handle_cards():
+    if request.method == 'GET':
+        cards = Card.query.all()
+        return jsonify([c.to_dict() for c in cards])
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No Card Data Found."}), 400
+        try:
+            new_card = Card(**data, created_at=datetime.now())
+            db.session.add(new_card)
+            db.session.commit()
+            return jsonify(new_card.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Could not create item: {str(e)}"}), 400
+
+
+@admin_blueprint.route('/api/cards/<string:card_id', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
+def handle_card(card_id):
+    card = Card.query.get_or_404(card_id)
+    if request.method == 'GET':
+        return jsonify(card.to_dict()), 200
+    elif request.method == 'PUT':
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        try:
+            for key, value in data.items():
+                setattr(card, key, value)
+            db.session.commit()
+            return jsonify(card.to_dict()), 200
+        except Exception as e:
+            return jsonify({"error": f"Could not update the card: {str(e)}"}), 400
+    elif request.method == 'DELETE':
+        db.session.delete(card)
+        db.session.commit()
+        return jsonify({"success": "Item successfully deleted"})

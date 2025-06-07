@@ -78,7 +78,7 @@ class Client(db.Model):
         }
 
     def __repr__(self):
-        return f"Client Details\n\tClient Id: {self.client_id}\n\tUser Id: {self.user_id}\n\tName: {self.first_name} {self.last_name}\n\tEmail: {self.email}\n\tAddress: {self.address}\n\tContact: {self.phone_number}"
+        return f"Client Details\n\tClient Id: {self.client_id}\n\tName: {self.first_name} {self.last_name}\n\tEmail: {self.email}\n\tAddress: {self.address}\n\tContact: {self.phone_number}"
 
 
 class Artist(db.Model):
@@ -201,3 +201,16 @@ class Card(db.Model):
     order_in_column = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "column": self.column,
+            "order_in_column": self.order_in_column,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
+
+    def __repr__(self):
+        return f"id: {self.id}, title: {self.title}, column: {self.column} order: {self.order_in_column} created: {self.created_at} updated: {self.updated_at}"
