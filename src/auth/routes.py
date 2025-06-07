@@ -115,7 +115,7 @@ def handle_cards():
             return jsonify({"error": f"Could not create item: {str(e)}"}), 400
 
 
-@admin_blueprint.route('/api/cards/<string:card_id', methods=['GET', 'PUT', 'DELETE'])
+@admin_blueprint.route('/api/cards/<string:card_id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
 def handle_card(card_id):
     card = Card.query.get_or_404(card_id)
