@@ -195,7 +195,7 @@ class TokenBlockList(db.Model):
 class Card(db.Model):
     __tablename__ = "cards"
 
-    id = db.Column(db.String(255), primary_key=True, autoincrement=True)
+    id = db.Column(db.String(255), primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     column = db.Column(db.String(50), nullable=False)
     order_in_column = db.Column(db.Integer, default=0)
