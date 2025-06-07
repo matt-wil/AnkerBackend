@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
 import enum
+from datetime import datetime
 
 
 class BookingStatus(enum.Enum):
@@ -190,3 +191,13 @@ class TokenBlockList(db.Model):
 
     user = db.relationship("User")
 
+
+class Card(db.Model):
+    __tablename__ = "cards"
+
+    id = db.Column(db.String(255), primary_key=True, autoincrement=True)
+    title = db.Column(db.String(255), nullable=False)
+    column = db.Column(db.String(50), nullable=False)
+    order_in_column = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
