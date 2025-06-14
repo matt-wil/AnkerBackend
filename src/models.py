@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
-import sqlalchemy as sa
 import enum
 from datetime import datetime
 import uuid
@@ -31,7 +30,7 @@ class Booking(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('services.service_id'), nullable=True)
     start_datetime = db.Column(db.DateTime, nullable=False)
     end_datetime = db.Column(db.DateTime, nullable=False)
-    notes = db.Column(sa.String)
+    notes = db.Column(db.Text)
     booking_status = db.Column(Enum(BookingStatus), default=BookingStatus.pending, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
 
