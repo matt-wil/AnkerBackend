@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy as sa
 import enum
 from datetime import datetime
 import uuid
@@ -17,19 +18,22 @@ class BookingStatus(enum.Enum):
 
 class Booking(db.Model):
     __tablename__ = 'bookings'
-    __table_args__ = (
-        db.UniqueConstraint('artist_id', 'booking_date', 'booking_time', name='uq_artist_booking_slot'),
-    )
+    # __table_args__ = (
+    #     db.UniqueConstraint('artist_id', 'start_datetime', 'end_datetime', name='uq_artist_booking_slot'),
+    # )
 
     booking_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'), nullable=False)
-    artist_id = db.Column(db.Integer, db.ForeignKey('artists.artist_id'), nullable=False)
-    service_id = db.Column(db.Integer, db.ForeignKey('services.service_id'), nullable=False)
-    booking_date = db.Column(db.Date, nullable=False)
-    booking_time = db.Column(db.Time, nullable=False)
-    notes = db.Column(db.String)
+    title = db.Column(db.String(255), nullable=False)
+    client_name = db.Column(db.String(255), nullable=False)
+    telephone = db.Column(db.String(30), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.client_id'), nullable=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artists.artist_id'), nullable=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('services.service_id'), nullable=True)
+    start_datetime = db.Column(db.DateTime, nullable=False)
+    end_datetime = db.Column(db.DateTime, nullable=False)
+    notes = db.Column(sa.String)
     booking_status = db.Column(Enum(BookingStatus), default=BookingStatus.pending, nullable=False)
-    created_at = db.Column(db.DateTime, default=func.now())
+    created_at = db.Column(db.DateTime, default=datetime.now())
 
     client = relationship("Client", back_populates="bookings")
     artist = relationship("Artist", back_populates="bookings")
@@ -38,18 +42,21 @@ class Booking(db.Model):
     def to_dict(self):
         return {
             "booking_id": self.booking_id,
+            "title": self.title,
+            "client_name": self.client_name,
+            "telephone": self.telephone,
             "client_id": self.client_id,
             "artist_id": self.artist_id,
             "service_id": self.service_id,
-            "booking_date": self.booking_date,
-            "booking_time": self.booking_time,
+            "start_datetime": self.start_datetime,
+            "end_datetime": self.end_datetime,
             "notes": self.notes,
             "booking_status": self.booking_status,
             "created_at": self.created_at
         }
 
     def __repr__(self):
-        return f"Status: {self.booking_status}\n\tBooking with {self.client_id} at {self.booking_time} on the {self.booking_date}"
+        return f"Status: {self.booking_status}\n\tBooking with {self.client_name} at {self.start_datetime}. Telephone number is {self.telephone}"
 
 
 class Client(db.Model):
