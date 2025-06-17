@@ -148,7 +148,12 @@ def handle_card(card_id):
 @admin_blueprint.route('/api/portfolio_images', methods=['POST'])
 @jwt_required()
 def post_portfolio_image():
+    current_db_uri = db.engine.url
+    print("Current DB: ", current_db_uri)
+
     data = request.get_json()
+    print("Data Received", data)
+
     if not data:
         return jsonify({"Error": "Portfolio image data not received."}), 400
 
@@ -157,17 +162,48 @@ def post_portfolio_image():
         return jsonify({"error": "Artists name required"}), 400
 
     artist = Artist.query.filter_by(name=artist_name).first()
+    print(f"Found artist:{artist.name if artist else 'None'}")
+
     if not artist:
         return jsonify({"Error": f"No artist with {artist_name} name found in db"}), 404
     try:
-        data["artist_id"] = artist.id
+        image_url = data.get("image_url")
+        description = data.get("description")
+        category = data.get("category")
+
+        data["artist_id"] = artist.artist_id
         data["upload_date"] = datetime.now()
-        new_portfolio_image = PortfolioImage(**data)
+
+        print("Here is the Data before being pushed into the PortfolioImage Table", data)
+        new_portfolio_image_data = {
+            "artist_id": artist.artist_id,
+            "image_url": image_url,
+            "description": description,
+            "category": category,
+            "upload_date": datetime.now()
+        }
+        print("Data for PortfolioImage Table:", new_portfolio_image_data)
+
+        new_portfolio_image = PortfolioImage(**new_portfolio_image_data)
         db.session.add(new_portfolio_image)
+
+        db.session.flush()
+        print(f"PortfolioImage object added to session. ID after flush (might be temp): {new_portfolio_image.image_id}")
+
         db.session.commit()
+        print(f"Successfully committed PortfolioImage to database. Final ID: {new_portfolio_image.image_id}")
+
+        # NEXT CHECK
+        retrieved_image = PortfolioImage.query.get(new_portfolio_image.image_id)
+        if retrieved_image:
+            print(f"Image successfully retrieved immediately after commit: ID={retrieved_image.image_id}, URL={retrieved_image.image_url}")
+        else:
+            print(f"Image with ID {new_portfolio_image.image_id} NOT found immediately after commit. This is highly unusual.")
+
         return jsonify(new_portfolio_image.to_dict()), 201
     except AttributeError as e:
-        return jsonify({"error": f"Attribute Error found {str(e)}"})
+        print("ATTRIBUTE ERROR:", str(e))
+        return jsonify({"error": f"Attribute Error found {str(e)}"}), 500
     except Exception as e:
         db.session.rollback()
         return jsonify({"Error": f"Error creating new portfolio image {str(e)}"}), 400
