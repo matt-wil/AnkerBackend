@@ -1,18 +1,9 @@
 from extensions import db, pwd_context
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy import Enum
 from sqlalchemy.ext.hybrid import hybrid_property
-import enum
 from datetime import datetime
 import uuid
-
-
-class BookingStatus(enum.Enum):
-    pending = "pending"
-    confirmed = "confirmed"
-    cancelled = "cancelled"
-    completed = "completed"
 
 
 class Booking(db.Model):
@@ -31,7 +22,6 @@ class Booking(db.Model):
     start_datetime = db.Column(db.DateTime, nullable=False)
     end_datetime = db.Column(db.DateTime, nullable=False)
     notes = db.Column(db.Text)
-    booking_status = db.Column(Enum(BookingStatus), default=BookingStatus.pending, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
 
     client = relationship("Client", back_populates="bookings")
@@ -50,12 +40,11 @@ class Booking(db.Model):
             "start_datetime": self.start_datetime,
             "end_datetime": self.end_datetime,
             "notes": self.notes,
-            "booking_status": self.booking_status,
             "created_at": self.created_at
         }
 
     def __repr__(self):
-        return f"Status: {self.booking_status}\n\tBooking with {self.client_name} at {self.start_datetime}. Telephone number is {self.telephone}"
+        return f"Booking with {self.client_name} at {self.start_datetime}. Telephone number is {self.telephone}"
 
 
 class Client(db.Model):

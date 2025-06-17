@@ -52,7 +52,9 @@ def login():
 @auth_blueprint.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
+    print("Reached Refresh Endpoint")
     user_id = get_jwt_identity()
+    print(user_id)
     access_token = create_access_token(identity=user_id)
     add_token_to_database(access_token)
     return {"access_token": access_token}, 200

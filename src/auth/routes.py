@@ -63,6 +63,8 @@ def handle_bookings():
         if not data:
             return jsonify({"Error": "No Booking Data Found"}), 400
         try:
+            data['start_datetime'] = datetime.fromisoformat(data['start_datetime'])
+            data['end_datetime'] = datetime.fromisoformat(data['end_datetime'])
             new_booking = Booking(**data, created_at=datetime.now())
             db.session.add(new_booking)
             db.session.commit()
@@ -83,6 +85,11 @@ def handle_booking(booking_id):
         if not data:
             return jsonify({"Error": "No data provided"}), 400
         try:
+            data['start_datetime'] = datetime.fromisoformat(data['start_datetime'])
+            data['end_datetime'] = datetime.fromisoformat(data['end_datetime'])
+
+            if 'created_at' in data and isinstance(data['created_at'], str):
+                data['created_at'] = datetime.fromisoformat(data['created_at'])
             for key, value in data.items():
                 setattr(booking, key, value)
             db.session.commit()
@@ -136,3 +143,29 @@ def handle_card(card_id):
         db.session.delete(card)
         db.session.commit()
         return jsonify({"success": "Item successfully deleted"})
+
+
+@admin_blueprint.route('/api/portfolio_images', methods=['POST'])
+@jwt_required()
+def post_portfolio_image():
+    data = request.get_json()
+    if not data:
+        return jsonify({"Error": "Portfolio image data not received."}), 400
+
+    artist_name = data.get("artist_name")
+    if not artist_name:
+        return jsonify({"error": "Artists name required"}), 400
+
+    artist = Artist.query.filter_by(name=artist_name.first())
+    if not artist:
+        return jsonify({"Error": f"No artist with {artist_name} name found in db"}), 404
+    try:
+        data["artist_id"] = artist.id
+        data["upload_date"] = datetime.now()
+        new_portfolio_image = PortfolioImage(**data)
+        db.session.add(new_portfolio_image)
+        db.session.commit()
+        return jsonify(new_portfolio_image.to_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"Error": f"Error creating new portfolio image {str(e)}"}), 400
