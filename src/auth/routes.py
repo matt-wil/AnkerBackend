@@ -156,7 +156,7 @@ def post_portfolio_image():
     if not artist_name:
         return jsonify({"error": "Artists name required"}), 400
 
-    artist = Artist.query.filter_by(name=artist_name.first())
+    artist = Artist.query.filter_by(name=artist_name).first()
     if not artist:
         return jsonify({"Error": f"No artist with {artist_name} name found in db"}), 404
     try:
@@ -166,6 +166,8 @@ def post_portfolio_image():
         db.session.add(new_portfolio_image)
         db.session.commit()
         return jsonify(new_portfolio_image.to_dict()), 201
+    except AttributeError as e:
+        return jsonify({"error": f"Attribute Error found {str(e)}"})
     except Exception as e:
         db.session.rollback()
         return jsonify({"Error": f"Error creating new portfolio image {str(e)}"}), 400
