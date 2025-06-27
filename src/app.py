@@ -8,7 +8,7 @@ def create_app():
     # config
     app = Flask(__name__)
     app.config.from_object(Config)
-    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://anker-tattoo-piercing.vercel.app"])
 
     # initialization
     db.init_app(app)
