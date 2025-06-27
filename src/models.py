@@ -84,6 +84,7 @@ class Artist(db.Model):
     name = db.Column(db.String(100), nullable=False)
     profession = db.Column(db.String(100), nullable=False)
     bio = db.Column(db.Text)
+    bio_en = db.Column(db.Text)
     specialties = db.Column(db.Text)
     profile_image = db.Column(db.String(255))  # url to the static/images/artists
     is_active = db.Column(db.Boolean, default=True)
@@ -99,6 +100,7 @@ class Artist(db.Model):
             "name": self.name,
             "profession": self.profession,
             "bio": self.bio,
+            "bio_en": self.bio_en,
             "specialties": self.specialties,
             "profile_image": self.profile_image,
             "is_active": self.is_active,
